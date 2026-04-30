@@ -1,0 +1,38 @@
+﻿# Dependencies
+node_modules/
+
+# Environment variables - NEVER commit these
+.env
+.env.local
+.env.production
+
+# SSL certificates and private keys - NEVER commit these
+backend/certs/
+*.key
+*.pem
+*.crt
+*.csr
+
+# Build output
+frontend/dist/
+frontend/build/
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+*.swp
+
+# Prisma
+backend/prisma/migrations/
+
+# Test coverage
+coverage/
+
+PROJECT_CONTEXT.md
