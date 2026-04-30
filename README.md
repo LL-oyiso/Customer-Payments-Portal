@@ -30,3 +30,12 @@ This application allows bank customers to register, log in, and submit internati
 
 ## Project Structure
 
+## Setup Instructions
+Coming soon as the project is built.
+## Security Audit Notes
+### Known Dependency Vulnerabilities
+**@hono/node-server (Moderate - GHSA-92pp-h63x-v22m)**
+- Affects: Prisma internal dev tooling only (not production runtime)
+- Decision: npm audit fix --force was rejected as it requires a breaking Prisma downgrade
+- Risk to production: None - this package is never loaded by our Express API
+- Action: Will update when a non-breaking fix is available upstream
