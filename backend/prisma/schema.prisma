@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  STAFF
+}
+
+enum TransactionStatus {
+  PENDING
+  VERIFIED
+  SUBMITTED
+}
+
+model User {
+  id            String   @id @default(uuid())
+  role          Role     @default(CUSTOMER)
+  fullName      String
+  idNumber      String   @unique
+  accountNumber String   @unique
+  username      String   @unique
+  passwordHash  String
+  createdAt     DateTime @default(now())
+  lastLoginAt   DateTime?
+
+  transactions     Transaction[] @relation("CustomerTransactions")
+  verifiedTx       Transaction[] @relation("StaffVerifications")
+  auditLogs        AuditLog[]
+  failedLogins     FailedLoginAttempt[]
+  refreshTokens    RefreshToken[]
+}
+
+model Transaction {
+  id             String            @id @default(uuid())
+  customerId     String
+  amount         Decimal           @db.Decimal(15, 2)
+  currency       String            @db.VarChar(3)
+  provider       String
+  payeeAccount   String
+  payeeSwiftCode String
+  status         TransactionStatus @default(PENDING)
+  verifiedById   String?
+  submittedAt    DateTime?
+  createdAt      DateTime          @default(now())
+
+  customer   User  @relation("CustomerTransactions", fields: [customerId], references: [id])
+  verifiedBy User? @relation("StaffVerifications", fields: [verifiedById], references: [id])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revoked   Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  action     String
+  entityType String?
+  entityId   String?
+  ipAddress  String?
+  userAgent  String?
+  success    Boolean
+  detail     String?
+  timestamp  DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+}
+
+model FailedLoginAttempt {
+  id        String   @id @default(uuid())
+  username  String
+  ipAddress String
+  timestamp DateTime @default(now())
+
+  user User? @relation(fields: [username], references: [username])
+}
