@@ -7,6 +7,11 @@ import CustomerDashboard from './pages/CustomerDashboard'
 import NewPayment from './pages/NewPayment'
 import TransactionHistory from './pages/TransactionHistory'
 import StaffQueue from './pages/StaffQueue'
+import AllTransactions from './pages/staff/AllTransactions'
+import CustomerAccounts from './pages/staff/CustomerAccounts'
+import Reports from './pages/staff/Reports'
+import AuditLogs from './pages/staff/AuditLogs'
+import Settings from './pages/staff/Settings'
 
 export default function App() {
   return (
@@ -26,6 +31,11 @@ export default function App() {
           {/* Staff routes */}
           <Route element={<ProtectedRoute role="STAFF" />}>
             <Route path="/staff" element={<StaffQueue />} />
+            <Route path="/staff/all-transactions" element={<AllTransactions />} />
+            <Route path="/staff/customers" element={<CustomerAccounts />} />
+            <Route path="/staff/reports" element={<Reports />} />
+            <Route path="/staff/audit-logs" element={<AuditLogs />} />
+            <Route path="/staff/settings" element={<Settings />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />
