@@ -23,6 +23,7 @@ export default function StaffQueue() {
       .finally(() => setLoading(false))
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchPending() }, [])
 
   const handleVerify = async (id) => {

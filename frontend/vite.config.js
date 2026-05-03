@@ -6,13 +6,16 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+const certKey  = path.resolve(__dirname, '../backend/certs/server.key')
+const certFile = path.resolve(__dirname, '../backend/certs/server.crt')
+const certsExist = fs.existsSync(certKey) && fs.existsSync(certFile)
+
 export default defineConfig({
   plugins: [react()],
   server: {
-    https: {
-      key: fs.readFileSync(path.resolve(__dirname, '../backend/certs/server.key')),
-      cert: fs.readFileSync(path.resolve(__dirname, '../backend/certs/server.crt')),
-    },
+    https: certsExist
+      ? { key: fs.readFileSync(certKey), cert: fs.readFileSync(certFile) }
+      : false,
     port: 5173,
     strictPort: true,
   },
