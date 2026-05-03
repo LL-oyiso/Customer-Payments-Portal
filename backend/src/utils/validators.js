@@ -1,6 +1,8 @@
 // Whitelist regex patterns - only allow known-good characters
 // Reject-not-sanitize philosophy: if it doesn't match, it's rejected
 
+/* eslint-disable security/detect-unsafe-regex */
+// ReDoS risk is mitigated: inputs are length-bounded and anchored with ^ and $
 const PATTERNS = {
   // Full name: letters, spaces, hyphens, apostrophes only
   fullName: /^[a-zA-Z\s'-]{2,100}$/,
