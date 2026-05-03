@@ -44,28 +44,16 @@ export default function LoginPage() {
             <span style={styles.logoText}>RAND</span>
           </div>
 
-          <div style={styles.heroText}>
-            <h1 style={styles.heroHeading}>Secure International<br />Payments</h1>
-            <p style={styles.heroSub}>
-              Move money across borders with confidence.<br />
-              Fast, compliant, and ironclad security.
-            </p>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={styles.heroText}>
+              <h1 style={styles.heroHeading}>Secure International<br />Payments</h1>
+              <p style={styles.heroSub}>
+                Move money across borders with confidence.<br />
+                Fast, compliant, and ironclad security.
+              </p>
+            </div>
           </div>
 
-          <div style={styles.trustRow}>
-            <div style={styles.trustItem}>
-              <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <span>TLS 1.2+ Encrypted</span>
-            </div>
-            <div style={styles.trustItem}>
-              <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-              <span>SWIFT Compliant</span>
-            </div>
-            <div style={styles.trustItem}>
-              <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-              <span>Audit Logged</span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -172,7 +160,6 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    justifyContent: 'space-between',
   },
   logoRow: {
     display: 'flex',

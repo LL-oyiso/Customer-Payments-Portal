@@ -124,20 +124,6 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <div style={styles.trustRow}>
-            <div style={styles.trustItem}>
-              <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <span>Argon2id Password Hashing</span>
-            </div>
-            <div style={styles.trustItem}>
-              <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-              <span>Breach Password Detection</span>
-            </div>
-            <div style={styles.trustItem}>
-              <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-              <span>End-to-End Encrypted</span>
-            </div>
-          </div>
         </div>
       </div>
 
