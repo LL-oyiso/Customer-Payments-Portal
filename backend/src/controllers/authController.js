@@ -25,16 +25,20 @@ const generateTokens = (user) => {
 
 // Validation rules for register
 const registerValidation = [
-  body('fullName').trim().custom((val) => {
-    if (!validate.fullName(val)) throw new Error('Invalid full name.')
+  body('firstName').trim().custom((val) => {
+    if (!validate.fullName(val)) throw new Error('Invalid first name.')
+    return true
+  }),
+  body('lastName').trim().custom((val) => {
+    if (!validate.fullName(val)) throw new Error('Invalid last name.')
     return true
   }),
   body('idNumber').trim().custom((val) => {
-    if (!validate.idNumber(val)) throw new Error('Invalid ID number format.')
+    if (!validate.idNumber(val)) throw new Error('Invalid SA ID number. Must be exactly 13 digits.')
     return true
   }),
   body('accountNumber').trim().custom((val) => {
-    if (!validate.accountNumber(val)) throw new Error('Invalid account number.')
+    if (!validate.accountNumber(val)) throw new Error('Invalid account number. Must be 7 to 11 digits.')
     return true
   }),
   body('username').trim().custom((val) => {
@@ -53,12 +57,17 @@ const loginValidation = [
     if (!validate.username(val)) throw new Error('Invalid username.')
     return true
   }),
+  body('accountNumber').trim().custom((val) => {
+    if (!validate.accountNumber(val)) throw new Error('Invalid account number.')
+    return true
+  }),
   body('password').notEmpty().withMessage('Password is required.'),
 ]
 
 const register = async (req, res, next) => {
   try {
-    const { fullName, idNumber, accountNumber, username, password } = req.body
+    const { firstName, lastName, idNumber, accountNumber, username, password } = req.body
+    const fullName = `${firstName.trim()} ${lastName.trim()}`
 
     // Check password strength via HIBP
     const breached = await isPasswordBreached(password)
@@ -68,12 +77,13 @@ const register = async (req, res, next) => {
       })
     }
 
-    // Check for existing user - use generic message to prevent enumeration
+    // Generic message for all conflicts - prevents account enumeration attacks
+    // See: Iron-Clad Java Ch.2 - never reveal whether an account exists
     const existing = await prisma.user.findFirst({
       where: { OR: [{ username }, { idNumber }, { accountNumber }] },
     })
     if (existing) {
-      return res.status(409).json({ error: 'Registration failed. Please check your details.' })
+      return res.status(409).json({ error: 'Registration failed. Please check your details and try again.' })
     }
 
     const passwordHash = await hashPassword(password)
@@ -103,7 +113,7 @@ const register = async (req, res, next) => {
 }
 
 const login = async (req, res, next) => {
-  const { username, password } = req.body
+  const { username, accountNumber, password } = req.body
   const ip = req.ip
 
   try {
@@ -123,7 +133,10 @@ const login = async (req, res, next) => {
       ? await verifyPassword(user.passwordHash, password)
       : await verifyPassword(dummyHash, password).catch(() => false)
 
-    if (!user || !passwordValid) {
+    // Also verify account number matches - same generic error to prevent enumeration
+    const accountValid = user ? user.accountNumber === accountNumber : false
+
+    if (!user || !passwordValid || !accountValid) {
       await prisma.failedLoginAttempt.create({
         data: { username, ipAddress: ip },
       }).catch(() => {})

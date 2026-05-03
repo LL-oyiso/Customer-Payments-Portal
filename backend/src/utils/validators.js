@@ -5,8 +5,8 @@ const PATTERNS = {
   // Full name: letters, spaces, hyphens, apostrophes only
   fullName: /^[a-zA-Z\s'-]{2,100}$/,
 
-  // South African ID number: exactly 13 digits
-  idNumber: /^\d{13}$/,
+  // South African ID number: exactly 13 digits, not all zeros, first 6 = YYMMDD
+  idNumber: /^(?!0{13})\d{13}$/,
 
   // SA bank account number: 7 to 11 digits
   accountNumber: /^\d{7,11}$/,
@@ -44,7 +44,7 @@ const ALLOWED_PROVIDERS = ['SWIFT']
 
 const validate = {
   fullName: (val) => PATTERNS.fullName.test(val),
-  idNumber: (val) => PATTERNS.idNumber.test(val),
+  idNumber: (val) => PATTERNS.idNumber.test(val) && val !== '0000000000000',
   accountNumber: (val) => PATTERNS.accountNumber.test(val),
   username: (val) => PATTERNS.username.test(val),
   password: (val) => PATTERNS.password.test(val),

@@ -8,7 +8,7 @@ export default function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const [form, setForm] = useState({ username: '', password: '' })
+  const [form, setForm] = useState({ username: '', accountNumber: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -86,6 +86,21 @@ export default function LoginPage() {
                 type="text"
                 autoComplete="username"
                 value={form.username}
+                onChange={handleChange}
+                required
+                disabled={loading}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="accountNumber">Account Number</label>
+              <input
+                id="accountNumber"
+                name="accountNumber"
+                type="text"
+                autoComplete="off"
+                placeholder="Your bank account number"
+                value={form.accountNumber}
                 onChange={handleChange}
                 required
                 disabled={loading}
