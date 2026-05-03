@@ -16,15 +16,28 @@ export default function StaffQueue() {
   const [successMsg, setSuccessMsg]     = useState('')
 
   const fetchPending = () => {
-    setLoading(true)
     api.get('/transactions/pending')
-      .then(({ data }) => setTransactions(data.transactions))
-      .catch(() => setError('Could not load transactions.'))
-      .finally(() => setLoading(false))
+      .then(({ data }) => {
+        setTransactions(data.transactions)
+        setLoading(false)
+      })
+      .catch(() => {
+        setError('Could not load transactions.')
+        setLoading(false)
+      })
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { fetchPending() }, [])
+  useEffect(() => {
+    api.get('/transactions/pending')
+      .then(({ data }) => {
+        setTransactions(data.transactions)
+        setLoading(false)
+      })
+      .catch(() => {
+        setError('Could not load transactions.')
+        setLoading(false)
+      })
+  }, [])
 
   const handleVerify = async (id) => {
     setActionLoading((p) => ({ ...p, [`verify_${id}`]: true }))
