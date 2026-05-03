@@ -102,7 +102,6 @@ export default function LoginPage() {
                 placeholder="Your bank account number"
                 value={form.accountNumber}
                 onChange={handleChange}
-                required
                 disabled={loading}
               />
             </div>

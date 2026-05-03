@@ -15,6 +15,7 @@ const STRENGTH = [
 const PATTERNS = {
   firstName:     /^[a-zA-Z\s'-]{2,50}$/,
   lastName:      /^[a-zA-Z\s'-]{2,50}$/,
+  email:         /^[a-zA-Z0-9._%+\-]{1,64}@[a-zA-Z0-9.\-]{1,253}\.[a-zA-Z]{2,}$/,
   idNumber:      /^(?!0{13})\d{13}$/,
   accountNumber: /^\d{7,11}$/,
   username:      /^[a-zA-Z0-9_]{3,30}$/,
@@ -24,6 +25,7 @@ const PATTERNS = {
 const HINTS = {
   firstName:     'Letters only, 2–50 characters',
   lastName:      'Letters only, 2–50 characters',
+  email:         'e.g. yourname@example.com',
   idNumber:      'Exactly 13 digits — must be a valid SA ID number',
   accountNumber: '7 to 11 digits',
   username:      '3–30 characters, letters, numbers and underscores only',
@@ -33,7 +35,7 @@ const HINTS = {
 export default function RegisterPage() {
   const navigate = useNavigate()
 
-  const [form, setForm] = useState({ firstName: '', lastName: '', idNumber: '', accountNumber: '', username: '', password: '' })
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', idNumber: '', accountNumber: '', username: '', password: '' })
   const [fieldErrors, setFieldErrors] = useState({})
   const [error, setError]     = useState('')
   const [success, setSuccess] = useState('')
@@ -175,6 +177,20 @@ export default function RegisterPage() {
                   : <span className="form-hint">{HINTS.lastName}</span>
                 }
               </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="email">Email Address</label>
+              <input
+                id="email" name="email" type="email" autoComplete="email"
+                placeholder="e.g. yourname@example.com"
+                value={form.email} onChange={handleChange} onBlur={handleBlur}
+                className={fieldErrors.email ? 'error' : ''} disabled={loading}
+              />
+              {fieldErrors.email
+                ? <span className="form-error">{fieldErrors.email}</span>
+                : <span className="form-hint">{HINTS.email}</span>
+              }
             </div>
 
             <div className="form-group">

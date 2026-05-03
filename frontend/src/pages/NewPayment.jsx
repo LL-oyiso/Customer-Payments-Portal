@@ -102,12 +102,6 @@ export default function NewPayment() {
 
         <div style={styles.formWrap}>
           <div className="card" style={styles.formCard}>
-            {/* Security notice */}
-            <div style={styles.secureNote}>
-              <svg width="16" height="16" fill="none" stroke="#14532d" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <span>This connection is secured with TLS 1.2+ encryption</span>
-            </div>
-
             {error   && <div className="alert alert-error">{error}</div>}
             {success && <div className="alert alert-success">{success}</div>}
 

@@ -82,11 +82,11 @@ const createTransaction = async (req, res, next) => {
   }
 }
 
-// Staff: get all pending transactions
+// Staff: get all actionable transactions (PENDING awaiting verify, VERIFIED awaiting SWIFT submission)
 const getPendingTransactions = async (req, res, next) => {
   try {
     const transactions = await prisma.transaction.findMany({
-      where: { status: 'PENDING' },
+      where: { status: { in: ['PENDING', 'VERIFIED'] } },
       orderBy: { createdAt: 'asc' },
       include: {
         customer: {

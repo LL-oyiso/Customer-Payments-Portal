@@ -1,15 +1,5 @@
 import Sidebar from '../../components/Sidebar'
 
-const mockLogs = [
-  { time: '2026-05-02 17:34:12', user: 'staff01',   action: 'VERIFY_TRANSACTION',     entity: 'TXN-0021', ip: '127.0.0.1', success: true },
-  { time: '2026-05-02 17:31:05', user: 'staff01',   action: 'SUBMIT_TO_SWIFT',        entity: 'TXN-0019', ip: '127.0.0.1', success: true },
-  { time: '2026-05-02 17:10:44', user: 'LL_oyiso',  action: 'CREATE_TRANSACTION',     entity: 'TXN-0021', ip: '127.0.0.1', success: true },
-  { time: '2026-05-02 17:08:22', user: 'LL_oyiso',  action: 'LOGIN',                  entity: 'USER',     ip: '127.0.0.1', success: true },
-  { time: '2026-05-02 16:55:01', user: 'unknown',   action: 'LOGIN',                  entity: 'USER',     ip: '192.168.1.4', success: false },
-  { time: '2026-05-02 16:54:58', user: 'unknown',   action: 'LOGIN',                  entity: 'USER',     ip: '192.168.1.4', success: false },
-  { time: '2026-05-02 16:30:10', user: 'staff02',   action: 'VERIFY_TRANSACTION',     entity: 'TXN-0018', ip: '127.0.0.1', success: true },
-]
-
 export default function AuditLogs() {
   return (
     <div className="app-layout">
@@ -22,41 +12,10 @@ export default function AuditLogs() {
           </div>
           <button className="btn btn-outline btn-sm" disabled>Export Logs</button>
         </div>
-
-        <div className="alert alert-info">
-          Displaying sample audit data. Live audit log viewer is under development.
-        </div>
-
         <div className="card">
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Timestamp</th>
-                  <th>User</th>
-                  <th>Action</th>
-                  <th>Entity</th>
-                  <th>IP Address</th>
-                  <th>Result</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockLogs.map((log, i) => (
-                  <tr key={i} style={{ opacity: 0.75 }}>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>{log.time}</td>
-                    <td style={{ fontWeight: 600 }}>{log.user}</td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.8rem', color: '#374151' }}>{log.action}</td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>{log.entity}</td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>{log.ip}</td>
-                    <td>
-                      <span className={`badge ${log.success ? 'badge-submitted' : 'badge-pending'}`}>
-                        {log.success ? 'SUCCESS' : 'FAILED'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="empty-state">
+            <svg width="40" height="40" fill="none" stroke="#d1d5db" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <p>Audit log viewer coming soon</p>
           </div>
         </div>
       </main>

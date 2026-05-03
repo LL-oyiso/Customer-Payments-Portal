@@ -33,6 +33,9 @@ const PATTERNS = {
 
   // Provider name: letters, spaces, hyphens
   provider: /^[a-zA-Z\s-]{2,50}$/,
+
+  // Email: standard format, max 254 chars (RFC 5321)
+  email: /^[a-zA-Z0-9._%+\-]{1,64}@[a-zA-Z0-9.\-]{1,253}\.[a-zA-Z]{2,}$/,
 }
 
 // ISO 4217 allowed currency codes (subset of most common)
@@ -55,6 +58,7 @@ const validate = {
   swiftCode: (val) => PATTERNS.swiftCode.test(val),
   payeeAccount: (val) => PATTERNS.payeeAccount.test(val),
   provider: (val) => ALLOWED_PROVIDERS.includes(val),
+  email: (val) => PATTERNS.email.test(val) && val.length <= 254,
 }
 
 module.exports = { PATTERNS, ALLOWED_CURRENCIES, ALLOWED_PROVIDERS, validate }

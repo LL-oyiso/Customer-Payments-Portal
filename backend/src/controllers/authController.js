@@ -33,6 +33,10 @@ const registerValidation = [
     if (!validate.fullName(val)) throw new Error('Invalid last name.')
     return true
   }),
+  body('email').trim().toLowerCase().custom((val) => {
+    if (!validate.email(val)) throw new Error('Invalid email address.')
+    return true
+  }),
   body('idNumber').trim().custom((val) => {
     if (!validate.idNumber(val)) throw new Error('Invalid SA ID number. Must be exactly 13 digits.')
     return true
@@ -52,13 +56,14 @@ const registerValidation = [
 ]
 
 // Validation rules for login
+// accountNumber is optional — staff can omit it, customers must provide it
 const loginValidation = [
   body('username').trim().custom((val) => {
     if (!validate.username(val)) throw new Error('Invalid username.')
     return true
   }),
-  body('accountNumber').trim().custom((val) => {
-    if (!validate.accountNumber(val)) throw new Error('Invalid account number.')
+  body('accountNumber').optional({ nullable: true, checkFalsy: true }).trim().custom((val) => {
+    if (val && !validate.accountNumber(val)) throw new Error('Invalid account number format.')
     return true
   }),
   body('password').notEmpty().withMessage('Password is required.'),
@@ -66,7 +71,7 @@ const loginValidation = [
 
 const register = async (req, res, next) => {
   try {
-    const { firstName, lastName, idNumber, accountNumber, username, password } = req.body
+    const { firstName, lastName, email, idNumber, accountNumber, username, password } = req.body
     const fullName = `${firstName.trim()} ${lastName.trim()}`
 
     // Check password strength via HIBP
@@ -80,7 +85,7 @@ const register = async (req, res, next) => {
     // Generic message for all conflicts - prevents account enumeration attacks
     // See: Iron-Clad Java Ch.2 - never reveal whether an account exists
     const existing = await prisma.user.findFirst({
-      where: { OR: [{ username }, { idNumber }, { accountNumber }] },
+      where: { OR: [{ username }, { email }, { idNumber }, { accountNumber }] },
     })
     if (existing) {
       return res.status(409).json({ error: 'Registration failed. Please check your details and try again.' })
@@ -89,7 +94,7 @@ const register = async (req, res, next) => {
     const passwordHash = await hashPassword(password)
 
     const user = await prisma.user.create({
-      data: { fullName, idNumber, accountNumber, username, passwordHash, role: 'CUSTOMER' },
+      data: { fullName, email: email.toLowerCase(), idNumber, accountNumber, username, passwordHash, role: 'CUSTOMER' },
     })
 
     await prisma.auditLog.create({
@@ -133,8 +138,15 @@ const login = async (req, res, next) => {
       ? await verifyPassword(user.passwordHash, password)
       : await verifyPassword(dummyHash, password).catch(() => false)
 
-    // Also verify account number matches - same generic error to prevent enumeration
-    const accountValid = user ? user.accountNumber === accountNumber : false
+    // Account number verification:
+    // - If provided: must match exactly (customer login flow)
+    // - If omitted: only permitted for STAFF roles (staff login flow)
+    let accountValid
+    if (accountNumber) {
+      accountValid = user ? user.accountNumber === accountNumber : false
+    } else {
+      accountValid = user ? user.role === 'STAFF' : false
+    }
 
     if (!user || !passwordValid || !accountValid) {
       await prisma.failedLoginAttempt.create({
