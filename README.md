@@ -173,6 +173,34 @@ cd frontend && npm run dev
 
 Open **`https://localhost:5173`** in your browser.
 
+> **Browser security warning:** Because the certificate is self-signed, your browser will show a "Not Secure" warning on the first visit. This is expected for local development. Click **Advanced → Proceed to localhost** to continue. The connection is still encrypted over TLS 1.2+ — the warning exists only because the certificate was not issued by a trusted Certificate Authority.
+
+---
+
+### 6. Optional — View with a trusted HTTPS padlock (ngrok)
+
+The self-signed certificate encrypts all traffic but browsers display a warning rather than a padlock because the cert was not issued by a trusted Certificate Authority. To view the app with a genuine HTTPS padlock (as would be the case in a production deployment on Vercel, Netlify, or similar), you can use ngrok to create a temporary public HTTPS tunnel to your local server.
+
+**Why ngrok and not a hosting platform?**
+Platforms like Vercel and Netlify handle HTTPS automatically but abstract away the TLS configuration entirely. For this project, TLS was configured manually — specifying the minimum version, cipher suites, and HSTS directives — to demonstrate understanding of the underlying security decisions rather than delegating them to a platform. ngrok provides a CA-signed HTTPS URL that tunnels to the locally running server, giving the padlock without moving the application off the custom TLS configuration.
+
+**Install ngrok:**
+```bash
+winget install Ngrok.Ngrok
+```
+
+**Register at [https://ngrok.com](https://ngrok.com) (free) and add your auth token:**
+```bash
+ngrok config add-authtoken YOUR_TOKEN_HERE
+```
+
+**With both servers running, open a third terminal and run:**
+```bash
+ngrok http https://localhost:5173 --host-header=rewrite
+```
+
+Copy the `Forwarding` URL (e.g. `https://abc123.ngrok-free.app`) and open it in your browser. The padlock will appear and the full application works through the tunnel.
+
 ---
 
 ## Security Audit Notes
