@@ -28,7 +28,7 @@ RAND is a full-stack secure banking portal that allows customers to register, lo
 
 ## Rubric Security Controls
 
-### 1. Password Security — Exceeds Standard
+### 1. Password Security
 
 | Control | Implementation | Reference |
 |---|---|---|
@@ -41,7 +41,7 @@ RAND is a full-stack secure banking portal that allows customers to register, lo
 | Generic error messages | Login never reveals whether username exists | Account Enumeration Prevention |
 | Account lockout | rate-limiter-flexible — 5 attempts per 15 min, 1-hour block | OWASP Brute Force Prevention |
 
-### 2. Input Whitelisting — Exceeds Standard
+### 2. Input Whitelisting
 
 | Control | Implementation | Reference |
 |---|---|---|
@@ -55,7 +55,7 @@ RAND is a full-stack secure banking portal that allows customers to register, lo
 | Body size limits | 100kb max request size | DoS prevention |
 | ReDoS mitigation | All regex patterns anchored with `^$` and bounded quantifiers | OWASP ReDoS |
 
-### 3. Securing Data in Transit — Exceeds Standard
+### 3. Securing Data in Transit
 
 | Control | Implementation | Reference |
 |---|---|---|
@@ -76,7 +76,7 @@ RAND is a full-stack secure banking portal that allows customers to register, lo
 | Subject | C=ZA, ST=Gauteng, L=Johannesburg, O=APDS Banking |
 | Subject Alternative Names | DNS:localhost, IP:127.0.0.1 |
 
-### 4. Protecting Against Attacks — Exceeds Standard
+### 4. Protecting Against Attacks
 
 | Attack | Control | Implementation |
 |---|---|---|
@@ -98,7 +98,7 @@ RAND is a full-stack secure banking portal that allows customers to register, lo
 | Role Escalation | RBAC middleware on every route | `requireCustomer` / `requireStaff` |
 | Audit Logging | All auth and transaction events logged | Winston structured logging |
 
-### 5. DevSecOps Pipeline — Exceeds Standard
+### 5. DevSecOps Pipeline
 
 | Tool | Type | What it checks |
 |---|---|---|
