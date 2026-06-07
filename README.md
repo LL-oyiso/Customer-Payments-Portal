@@ -31,7 +31,7 @@ RAND is a full-stack secure banking portal that allows customers to register, lo
 
 ---
 
-## Rubric Security Controls
+## Security Controls
 
 ### 1. Password Security
 
@@ -238,15 +238,6 @@ ngrok http https://localhost:5173 --host-header=rewrite
 ```
 
 Copy the `Forwarding` URL (e.g. `https://abc123.ngrok-free.app`) and open it in your browser. The padlock will appear and the full application works through the tunnel.
-
----
-
-## AI Tool Usage Disclosure
-
-AI tools were used in the development of this project in the following ways:
-
-- **Cursor (AI coding assistant)** — assisted with scaffolding boilerplate code, drafting README documentation, and generating the RAND logo asset. All security architecture decisions, implementation choices, and the understanding of controls were researched and verified independently against OWASP guidelines, NIST SP 800-63B, and Iron-Clad Java by Manico and Detlefsen.
-- The most technically involved work — the HaveIBeenPwned k-anonymity check, server-side pepper, constant-time comparison, and brute force lockout sequence — was designed and validated manually, with AI used to assist with syntax and structure rather than security logic.
 
 ---
 
