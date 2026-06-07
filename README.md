@@ -2,7 +2,11 @@
 
 A secure international banking payments system built for APDS Part 2.
 
-![CI/CD Pipeline](https://github.com/LL-oyiso/Customer-Payments-Portal/actions/workflows/ci.yml/badge.svg)
+![GitHub Actions](https://github.com/LL-oyiso/Customer-Payments-Portal/actions/workflows/ci.yml/badge.svg)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/LL-oyiso/Customer-Payments-Portal/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/LL-oyiso/Customer-Payments-Portal/tree/main)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=LL-oyiso_Customer-Payments-Portal&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=LL-oyiso_Customer-Payments-Portal)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=LL-oyiso_Customer-Payments-Portal&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=LL-oyiso_Customer-Payments-Portal)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=LL-oyiso_Customer-Payments-Portal&metric=coverage)](https://sonarcloud.io/summary/new_code?id=LL-oyiso_Customer-Payments-Portal)
 
 ---
 
@@ -22,7 +26,8 @@ RAND is a full-stack secure banking portal that allows customers to register, lo
 | Authentication | JWT (15-min access token + 7-day refresh token rotation) |
 | Password Hashing | Argon2id with server-side pepper |
 | Transport Security | TLS 1.2+ with ECDHE cipher suites (Perfect Forward Secrecy) |
-| DevSecOps | GitHub Actions CI/CD with SAST, SCA, Secret Scanning, DAST |
+| DevSecOps | GitHub Actions (SAST, SCA, Secret Scanning, DAST) + CircleCI + SonarCloud |
+| Testing | Jest + Supertest — security-focused API test suite with lcov coverage |
 
 ---
 
@@ -88,6 +93,8 @@ RAND is a full-stack secure banking portal that allows customers to register, lo
 | IDOR | Ownership check on every transaction endpoint | `customerId === req.user.id` |
 | Session Hijacking | Short-lived JWT (15 min) + refresh token rotation | Token revocation on logout |
 | Information Disclosure | Generic errors, no stack traces in responses | `errorHandler.js` |
+| Framework Fingerprinting | `app.disable('x-powered-by')` + Helmet `hidePoweredBy` — belt-and-braces removal | Defence in depth |
+| Open Redirect | HTTP redirect server uses server-configured `REDIRECT_HOST` env var — never trusts the `Host` request header | CWE-601 / jssecurity:S5146 |
 | Account Enumeration | Identical messages for all auth failures | Iron-Clad Java Ch.2 |
 | HPP | `hpp` middleware | Express middleware |
 | MITM | TLS 1.2+ ECDHE-only, HSTS preload | Transport layer |
@@ -100,6 +107,10 @@ RAND is a full-stack secure banking portal that allows customers to register, lo
 
 ### 5. DevSecOps Pipeline
 
+Two independent pipelines run on every push to `main`.
+
+**GitHub Actions** (`.github/workflows/ci.yml`):
+
 | Tool | Type | What it checks |
 |---|---|---|
 | Gitleaks | Secret Scanning | Passwords, API keys, tokens in commit history |
@@ -110,18 +121,37 @@ RAND is a full-stack secure banking portal that allows customers to register, lo
 | Build Verification | CI | Confirms frontend compiles and artifact is produced |
 | OWASP ZAP | DAST | OWASP Top 10 scan against running application |
 
-Pipeline triggers on every push to `main` and every pull request.
+**CircleCI** (`.circleci/config.yml`) + **SonarCloud** (`sonar-project.properties`):
+
+| Step | What it does |
+|---|---|
+| ESLint (backend + frontend) | SAST on both codebases |
+| npm audit (backend + frontend) | SCA dependency audit |
+| Jest + Supertest (20 tests) | Security-focused API tests with lcov coverage report |
+| SonarCloud scan | Code quality gate — Security Rating A, 0 blocker issues, 100% new code coverage |
+
+### 6. Automated Security Test Suite
+
+`backend/tests/` contains 20 tests across 3 suites, all designed to prove security behaviour rather than just functionality:
+
+| Suite | What it proves |
+|---|---|
+| `auth.test.js` | Server-side input validation rejects malformed email, short password, invalid username; identical 401 error for wrong user vs wrong password (no enumeration); 429 returned when brute force limit is exceeded |
+| `rbac.test.js` | All protected routes reject missing tokens (401); CUSTOMER token blocked from staff-only endpoints (403); STAFF token blocked from customer-only endpoints (403); tampered and expired JWTs rejected (401) |
+| `health.test.js` | Health endpoint responds correctly; unknown routes return 404 |
+
+Coverage is generated in lcov format and uploaded to SonarCloud on every CircleCI run.
 
 ---
 
 ## Default Credentials (Development Only)
 
-| Role | Username | Account Number | Password |
+| Role | Username | Password | Account Number at Login |
 |---|---|---|---|
-| Staff | `staff01` | `10000001` | `StaffSecure@2026!` |
-| Staff | `staff02` | `10000002` | `StaffSecure@2026!` |
+| Staff | `staff01` | `StaffSecure@2026!` | Leave blank |
+| Staff | `staff02` | `StaffSecure@2026!` | Leave blank |
 
-> Customers register themselves at `/register`
+> Staff accounts are pre-provisioned via `backend/prisma/seed.js`. Staff log in with username and password only — the system detects the `STAFF` role and does not require an account number. Customers self-register at `/register` and must provide their account number to log in.
 
 ---
 
@@ -162,7 +192,15 @@ npx prisma migrate dev --name init
 node prisma/seed.js
 ```
 
-### 5. Run the application
+### 5. Run the security test suite
+```bash
+cd backend
+npm test
+```
+
+Generates a coverage report at `backend/coverage/lcov.info`. All 20 tests should pass with no database connection required — the test suite uses mocks.
+
+### 6. Run the application
 ```bash
 # Terminal 1 — Backend (HTTPS on port 5000)
 cd backend && npm start
@@ -177,7 +215,7 @@ Open **`https://localhost:5173`** in your browser.
 
 ---
 
-### 6. Optional — View with a trusted HTTPS padlock (ngrok)
+### 7. Optional — View with a trusted HTTPS padlock (ngrok)
 
 The self-signed certificate encrypts all traffic but browsers display a warning rather than a padlock because the cert was not issued by a trusted Certificate Authority. To view the app with a genuine HTTPS padlock (as would be the case in a production deployment on Vercel, Netlify, or similar), you can use ngrok to create a temporary public HTTPS tunnel to your local server.
 
@@ -200,6 +238,15 @@ ngrok http https://localhost:5173 --host-header=rewrite
 ```
 
 Copy the `Forwarding` URL (e.g. `https://abc123.ngrok-free.app`) and open it in your browser. The padlock will appear and the full application works through the tunnel.
+
+---
+
+## AI Tool Usage Disclosure
+
+AI tools were used in the development of this project in the following ways:
+
+- **Cursor (AI coding assistant)** — assisted with scaffolding boilerplate code, drafting README documentation, and generating the RAND logo asset. All security architecture decisions, implementation choices, and the understanding of controls were researched and verified independently against OWASP guidelines, NIST SP 800-63B, and Iron-Clad Java by Manico and Detlefsen.
+- The most technically involved work — the HaveIBeenPwned k-anonymity check, server-side pepper, constant-time comparison, and brute force lockout sequence — was designed and validated manually, with AI used to assist with syntax and structure rather than security logic.
 
 ---
 
