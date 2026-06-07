@@ -3,45 +3,8 @@ const https = require('node:https')
 const http = require('node:http')
 const fs = require('node:fs')
 const path = require('node:path')
-const express = require('express')
-const hpp = require('hpp')
-const { helmetConfig, corsConfig, generalLimiter } = require('./config/security')
-const { errorHandler } = require('./middleware/errorHandler')
+const app = require('./app')
 const { logger } = require('./utils/logger')
-const authRoutes = require('./routes/auth')
-const transactionRoutes = require('./routes/transactions')
-
-const app = express()
-
-// Trust proxy (for correct IP behind reverse proxy)
-app.set('trust proxy', 1)
-
-// Security middleware
-app.use(helmetConfig)
-app.use(corsConfig)
-app.use(hpp())
-app.use(generalLimiter)
-
-// Body parsing with strict size limits
-app.use(express.json({ limit: '100kb' }))
-app.use(express.urlencoded({ extended: false, limit: '100kb' }))
-
-// Routes
-app.use('/api/auth', authRoutes)
-app.use('/api/transactions', transactionRoutes)
-
-// Health check (no auth required)
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' })
-})
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not found.' })
-})
-
-// Global error handler
-app.use(errorHandler)
 
 // TLS configuration - strong ciphers with Perfect Forward Secrecy only
 const tlsOptions = {

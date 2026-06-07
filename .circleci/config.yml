@@ -35,6 +35,10 @@ jobs:
           name: Frontend SCA — dependency audit
           command: cd frontend && npm audit --audit-level=high
 
+      - run:
+          name: Backend security tests with coverage
+          command: cd backend && npm run test:ci
+
       - sonarcloud/scan
 
 workflows:
