@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth')
 const transactionRoutes = require('./routes/transactions')
 
 const app = express()
+app.disable('x-powered-by')
 
 app.set('trust proxy', 1)
 
