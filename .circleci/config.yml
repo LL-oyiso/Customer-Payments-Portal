@@ -1,0 +1,44 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@6.1.0
+  sonarcloud: sonarsource/sonarcloud@2.0.0
+
+jobs:
+  security-and-quality:
+    docker:
+      - image: cimg/node:24.5
+    steps:
+      - checkout
+
+      - run:
+          name: Install backend dependencies
+          command: cd backend && npm ci
+
+      - run:
+          name: Backend SAST — ESLint security scan
+          command: cd backend && npm run lint
+
+      - run:
+          name: Backend SCA — dependency audit
+          command: cd backend && npm audit --audit-level=high
+
+      - run:
+          name: Install frontend dependencies
+          command: cd frontend && npm ci
+
+      - run:
+          name: Frontend SAST — ESLint scan
+          command: cd frontend && npm run lint
+
+      - run:
+          name: Frontend SCA — dependency audit
+          command: cd frontend && npm audit --audit-level=high
+
+      - sonarcloud/scan
+
+workflows:
+  secure-portal-pipeline:
+    jobs:
+      - security-and-quality:
+          context: SonarCloud
