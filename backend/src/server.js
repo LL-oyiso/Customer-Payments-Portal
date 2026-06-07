@@ -1,8 +1,8 @@
 require('dotenv').config()
-const https = require('https')
-const http = require('http')
-const fs = require('fs')
-const path = require('path')
+const https = require('node:https')
+const http = require('node:http')
+const fs = require('node:fs')
+const path = require('node:path')
 const express = require('express')
 const hpp = require('hpp')
 const { helmetConfig, corsConfig, generalLimiter } = require('./config/security')
@@ -68,8 +68,14 @@ https.createServer(tlsOptions, app).listen(HTTPS_PORT, () => {
 })
 
 // HTTP redirect server - redirect all HTTP to HTTPS
+// Host header is not trusted; redirect target uses server-configured hostname only
+const REDIRECT_HOST = process.env.REDIRECT_HOST || 'localhost'
+
 http.createServer((req, res) => {
-  res.writeHead(301, { Location: `https://${req.headers.host.split(':')[0]}:${HTTPS_PORT}${req.url}` })
+  // Allow only safe relative paths: no protocol, no double slashes, no control chars
+  const rawPath = req.url || '/'
+  const safePath = /^\/[^\s]*$/.test(rawPath) ? rawPath : '/'
+  res.writeHead(301, { Location: `https://${REDIRECT_HOST}:${HTTPS_PORT}${safePath}` })
   res.end()
 }).listen(HTTP_PORT, () => {
   logger.info(`HTTP redirect server running on port ${HTTP_PORT}`)
