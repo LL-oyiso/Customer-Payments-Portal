@@ -176,16 +176,17 @@ jobs:
   # ─────────────────────────────────────────────
   # JOB 7: DAST — OWASP ZAP Baseline Scan
   # Dynamic Application Security Testing:
-  # scans the running app for OWASP Top 10 issues
-  # Runs against the deployed frontend URL
-  # Triggered manually (workflow_dispatch) to avoid noisy red crosses
-  # on normal push/PR checks when the public target is unavailable.
+  # actively probes the deployed frontend for OWASP Top 10 issues.
+  # Runs on every push. continue-on-error ensures pipeline stays green
+  # while still producing a full ZAP report as a GitHub Issue.
   # ─────────────────────────────────────────────
   dast:
     name: DAST — OWASP ZAP Baseline Scan
     runs-on: ubuntu-latest
     needs: [build]
     continue-on-error: true
+    permissions:
+      issues: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
