@@ -183,3 +183,28 @@ describe('Brute Force Protection — rate limit enforced per IP and username', (
     expect(res.body.error).toMatch(/too many/i)
   })
 })
+
+describe('Refresh Token — malformed JWT triggers REFRESH_TOKEN_INVALID log', () => {
+  it('returns 401 and logs the error when refresh token is malformed', async () => {
+    const { securityLog } = require('../src/utils/logger')
+
+    const res = await request(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken: 'not.a.valid.jwt.token' })
+
+    expect(res.status).toBe(401)
+    expect(res.body.error).toBe('Invalid or expired refresh token.')
+    expect(securityLog).toHaveBeenCalledWith('REFRESH_TOKEN_INVALID', expect.objectContaining({
+      error: expect.any(String),
+    }))
+  })
+
+  it('returns 401 when no refresh token is provided', async () => {
+    const res = await request(app)
+      .post('/api/auth/refresh')
+      .send({})
+
+    expect(res.status).toBe(401)
+    expect(res.body.error).toBe('Refresh token required.')
+  })
+})
