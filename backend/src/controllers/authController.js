@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const crypto = require('crypto')
+const crypto = require('node:crypto')
 const { PrismaClient } = require('@prisma/client')
 const { body } = require('express-validator')
 const { hashPassword, verifyPassword, isPasswordBreached } = require('../services/passwordService')
@@ -124,7 +124,8 @@ const login = async (req, res, next) => {
   try {
     // Check brute force limit
     await loginBruteForce.consume(`${ip}_${username}`)
-  } catch {
+  } catch (_e) {
+    // rate-limiter-flexible throws when limit is exceeded — this is the intended signal
     securityLog('LOGIN_BLOCKED_BRUTE_FORCE', { username, ip })
     return res.status(429).json({ error: 'Too many failed attempts. Please try again later.' })
   }
@@ -151,7 +152,7 @@ const login = async (req, res, next) => {
     if (!user || !passwordValid || !accountValid) {
       await prisma.failedLoginAttempt.create({
         data: { username, ipAddress: ip },
-      }).catch(() => {})
+      }).catch((_e) => { /* non-critical — do not block the auth response */ })
 
       securityLog('LOGIN_FAILED', { username, ip })
 
@@ -160,7 +161,7 @@ const login = async (req, res, next) => {
     }
 
     // Reset brute force counter on success
-    await loginBruteForce.delete(`${ip}_${username}`).catch(() => {})
+    await loginBruteForce.delete(`${ip}_${username}`).catch((_e) => { /* non-critical — counter already resets on next window */ })
 
     const { accessToken, refreshToken } = generateTokens(user)
 

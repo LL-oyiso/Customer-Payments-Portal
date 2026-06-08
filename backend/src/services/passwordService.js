@@ -1,6 +1,6 @@
 const argon2 = require('argon2')
-const crypto = require('crypto')
-const https = require('https')
+const crypto = require('node:crypto')
+const https = require('node:https')
 
 const ARGON2_OPTIONS = {
   type: argon2.argon2id,
