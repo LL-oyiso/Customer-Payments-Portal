@@ -59,7 +59,7 @@ export default function AllTransactions() {
   }, [])
 
   const currencies = useMemo(
-    () => [...new Set(transactions.map((tx) => tx.currency))].sort(),
+    () => [...new Set(transactions.map((tx) => tx.currency))].sort((a, b) => a.localeCompare(b)),
     [transactions]
   )
 
@@ -68,7 +68,7 @@ export default function AllTransactions() {
       if (statusFilter !== 'ALL' && tx.status !== statusFilter) return false
       if (currencyFilter !== 'ALL' && tx.currency !== currencyFilter) return false
       if (dateRange !== 'all') {
-        const days = parseInt(dateRange, 10)
+        const days = Number.parseInt(dateRange, 10)
         const cutoff = nowTs - days * 24 * 60 * 60 * 1000
         if (new Date(tx.createdAt).getTime() < cutoff) return false
       }
@@ -89,7 +89,7 @@ export default function AllTransactions() {
       tx.verifiedBy?.fullName || '',
       new Date(tx.createdAt).toISOString(),
     ])
-    const escape = (v) => `"${String(v).replace(/"/g, '""')}"`
+    const escape = (v) => `"${String(v).replaceAll('"', '""')}"`
     const csv = [headers, ...rows].map((r) => r.map(escape).join(',')).join('\r\n')
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
@@ -107,7 +107,7 @@ export default function AllTransactions() {
         <div className="page-header" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div>
             <h1>
-              All Transactions
+              All Transactions{' '}
               <span className="staff-badge">Staff</span>
             </h1>
             <p>Complete, read-only transaction history across all customers — retained for audit</p>
@@ -123,16 +123,16 @@ export default function AllTransactions() {
         <div className="card" style={styles.card}>
           <div style={styles.filters}>
             <div style={styles.filterGroup}>
-              <label style={styles.label}>Date Range</label>
-              <select style={styles.select} value={dateRange} onChange={(e) => setDateRange(e.target.value)}>
+              <label style={styles.label} htmlFor="filter-date">Date Range</label>
+              <select id="filter-date" style={styles.select} value={dateRange} onChange={(e) => setDateRange(e.target.value)}>
                 {Object.entries(DATE_RANGES).map(([val, lbl]) => (
                   <option key={val} value={val}>{lbl}</option>
                 ))}
               </select>
             </div>
             <div style={styles.filterGroup}>
-              <label style={styles.label}>Status</label>
-              <select style={styles.select} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+              <label style={styles.label} htmlFor="filter-status">Status</label>
+              <select id="filter-status" style={styles.select} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                 <option value="ALL">All</option>
                 <option value="PENDING">Pending</option>
                 <option value="VERIFIED">Verified</option>
@@ -140,8 +140,8 @@ export default function AllTransactions() {
               </select>
             </div>
             <div style={styles.filterGroup}>
-              <label style={styles.label}>Currency</label>
-              <select style={styles.select} value={currencyFilter} onChange={(e) => setCurrencyFilter(e.target.value)}>
+              <label style={styles.label} htmlFor="filter-currency">Currency</label>
+              <select id="filter-currency" style={styles.select} value={currencyFilter} onChange={(e) => setCurrencyFilter(e.target.value)}>
                 <option value="ALL">All currencies</option>
                 {currencies.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
