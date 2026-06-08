@@ -1,16 +1,22 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
 import { useAuth } from '../AuthContext'
 import Sidebar from '../components/Sidebar'
 import api from '../api'
 
-const StatusBadge = ({ status }) => {
-  const map = {
-    PENDING:   'badge badge-pending',
-    VERIFIED:  'badge badge-verified',
-    SUBMITTED: 'badge badge-submitted',
-  }
-  return <span className={map[status] || 'badge'}>{status}</span>
+const STATUS_CLASS = {
+  PENDING:   'badge badge-pending',
+  VERIFIED:  'badge badge-verified',
+  SUBMITTED: 'badge badge-submitted',
+}
+
+const StatusBadge = ({ status }) => (
+  <span className={STATUS_CLASS[status] || 'badge'}>{status}</span>
+)
+
+StatusBadge.propTypes = {
+  status: PropTypes.string.isRequired,
 }
 
 const maskAccount = (num) =>
@@ -89,19 +95,16 @@ export default function CustomerDashboard() {
 
           {error && <div className="alert alert-error">{error}</div>}
 
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
-              Loading...
-            </div>
-          ) : recent.length === 0 ? (
-            <div className="empty-state">
-              <svg width="40" height="40" fill="none" stroke="#d1d5db" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              <p>No transactions yet</p>
-              <Link to="/new-payment" className="btn btn-primary btn-sm" style={{ marginTop: '1rem' }}>
-                Make your first payment
-              </Link>
-            </div>
-          ) : (
+          {(()=> {
+            if (loading) return <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>Loading...</div>
+            if (recent.length === 0) return (
+              <div className="empty-state">
+                <svg width="40" height="40" fill="none" stroke="#d1d5db" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <p>No transactions yet</p>
+                <Link to="/new-payment" className="btn btn-primary btn-sm" style={{ marginTop: '1rem' }}>Make your first payment</Link>
+              </div>
+            )
+            return (
             <div className="table-wrap">
               <table>
                 <thead>
@@ -126,7 +129,8 @@ export default function CustomerDashboard() {
                 </tbody>
               </table>
             </div>
-          )}
+            )
+          })()}
         </div>
       </main>
     </div>

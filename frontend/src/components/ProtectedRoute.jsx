@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
 
@@ -9,9 +10,16 @@ export default function ProtectedRoute({ role }) {
   }
 
   if (role && user.role !== role) {
-    // Redirect to correct home based on actual role
     return <Navigate to={user.role === 'STAFF' ? '/staff' : '/dashboard'} replace />
   }
 
   return <Outlet />
+}
+
+ProtectedRoute.propTypes = {
+  role: PropTypes.string,
+}
+
+ProtectedRoute.defaultProps = {
+  role: null,
 }

@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useMemo } from 'react'
+import PropTypes from 'prop-types'
 import api from './api'
 
 const AuthContext = createContext(null)
@@ -33,11 +34,17 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
+  const value = useMemo(() => ({ user, login, logout }), [user, login, logout])
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )
+}
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 }
 
 export const useAuth = () => {

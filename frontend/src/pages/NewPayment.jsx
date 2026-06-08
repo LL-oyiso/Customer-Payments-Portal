@@ -37,7 +37,7 @@ export default function NewPayment() {
   const validateField = (name, value) => {
     if (!value) return 'This field is required.'
     if (PATTERNS[name] && !PATTERNS[name].test(value.toUpperCase())) return HINTS[name]
-    if (name === 'amount' && parseFloat(value) <= 0) return 'Amount must be greater than zero.'
+    if (name === 'amount' && Number.parseFloat(value) <= 0) return 'Amount must be greater than zero.'
     return ''
   }
 

@@ -35,7 +35,7 @@ const PATTERNS = {
   provider: /^[a-zA-Z\s-]{2,50}$/,
 
   // Email: standard format, max 254 chars (RFC 5321)
-  email: /^[a-zA-Z0-9._%+\-]{1,64}@[a-zA-Z0-9.\-]{1,253}\.[a-zA-Z]{2,}$/,
+  email: /^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]{1,253}\.[a-zA-Z]{2,}$/,
 }
 
 // ISO 4217 allowed currency codes (subset of most common)

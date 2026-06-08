@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import PropTypes from 'prop-types'
 import zxcvbn from 'zxcvbn'
 import api from '../api'
 import logo from '../assets/logo.png'
@@ -36,6 +37,15 @@ const FieldFeedback = ({ error, hint }) =>
   error
     ? <span className="form-error">{error}</span>
     : <span className="form-hint">{hint}</span>
+
+FieldFeedback.propTypes = {
+  error: PropTypes.string,
+  hint:  PropTypes.string.isRequired,
+}
+
+FieldFeedback.defaultProps = {
+  error: '',
+}
 
 export default function RegisterPage() {
   const navigate = useNavigate()

@@ -152,14 +152,15 @@ export default function AllTransactions() {
           </div>
 
           <div style={{ marginTop: '1rem' }}>
-            {loading ? (
-              <div style={{ textAlign: 'center', padding: '2.5rem', color: '#6b7280' }}>Loading...</div>
-            ) : filtered.length === 0 ? (
-              <div className="empty-state">
-                <svg width="40" height="40" fill="none" stroke="#d1d5db" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-                <p>No transactions match the selected filters</p>
-              </div>
-            ) : (
+            {(()=> {
+              if (loading) return <div style={{ textAlign: 'center', padding: '2.5rem', color: '#6b7280' }}>Loading...</div>
+              if (filtered.length === 0) return (
+                <div className="empty-state">
+                  <svg width="40" height="40" fill="none" stroke="#d1d5db" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                  <p>No transactions match the selected filters</p>
+                </div>
+              )
+              return (
               <div className="table-wrap">
                 <table>
                   <thead>
@@ -188,7 +189,8 @@ export default function AllTransactions() {
                   </tbody>
                 </table>
               </div>
-            )}
+              )
+            })()}
           </div>
 
           {!loading && filtered.length > 0 && (
