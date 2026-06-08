@@ -32,6 +32,11 @@ const HINTS = {
   password:      'Minimum 12 characters',
 }
 
+const FieldFeedback = ({ error, hint }) =>
+  error
+    ? <span className="form-error">{error}</span>
+    : <span className="form-hint">{hint}</span>
+
 export default function RegisterPage() {
   const navigate = useNavigate()
 
@@ -146,10 +151,7 @@ export default function RegisterPage() {
                   value={form.firstName} onChange={handleChange} onBlur={handleBlur}
                   className={fieldErrors.firstName ? 'error' : ''} disabled={loading}
                 />
-                {fieldErrors.firstName
-                  ? <span className="form-error">{fieldErrors.firstName}</span>
-                  : <span className="form-hint">{HINTS.firstName}</span>
-                }
+                <FieldFeedback error={fieldErrors.firstName} hint={HINTS.firstName} />
               </div>
               <div className="form-group" style={{ flex: 1 }}>
                 <label htmlFor="lastName">Last Name</label>
@@ -158,10 +160,7 @@ export default function RegisterPage() {
                   value={form.lastName} onChange={handleChange} onBlur={handleBlur}
                   className={fieldErrors.lastName ? 'error' : ''} disabled={loading}
                 />
-                {fieldErrors.lastName
-                  ? <span className="form-error">{fieldErrors.lastName}</span>
-                  : <span className="form-hint">{HINTS.lastName}</span>
-                }
+                <FieldFeedback error={fieldErrors.lastName} hint={HINTS.lastName} />
               </div>
             </div>
 
@@ -173,10 +172,7 @@ export default function RegisterPage() {
                 value={form.email} onChange={handleChange} onBlur={handleBlur}
                 className={fieldErrors.email ? 'error' : ''} disabled={loading}
               />
-              {fieldErrors.email
-                ? <span className="form-error">{fieldErrors.email}</span>
-                : <span className="form-hint">{HINTS.email}</span>
-              }
+              <FieldFeedback error={fieldErrors.email} hint={HINTS.email} />
             </div>
 
             <div className="form-group">
@@ -187,10 +183,7 @@ export default function RegisterPage() {
                 value={form.idNumber} onChange={handleChange} onBlur={handleBlur}
                 className={fieldErrors.idNumber ? 'error' : ''} disabled={loading}
               />
-              {fieldErrors.idNumber
-                ? <span className="form-error">{fieldErrors.idNumber}</span>
-                : <span className="form-hint">{HINTS.idNumber}</span>
-              }
+              <FieldFeedback error={fieldErrors.idNumber} hint={HINTS.idNumber} />
             </div>
 
             <div className="form-group">
@@ -201,10 +194,7 @@ export default function RegisterPage() {
                 value={form.accountNumber} onChange={handleChange} onBlur={handleBlur}
                 className={fieldErrors.accountNumber ? 'error' : ''} disabled={loading}
               />
-              {fieldErrors.accountNumber
-                ? <span className="form-error">{fieldErrors.accountNumber}</span>
-                : <span className="form-hint">{HINTS.accountNumber}</span>
-              }
+              <FieldFeedback error={fieldErrors.accountNumber} hint={HINTS.accountNumber} />
             </div>
 
             <div className="form-group">
@@ -214,10 +204,7 @@ export default function RegisterPage() {
                 value={form.username} onChange={handleChange} onBlur={handleBlur}
                 className={fieldErrors.username ? 'error' : ''} disabled={loading}
               />
-              {fieldErrors.username
-                ? <span className="form-error">{fieldErrors.username}</span>
-                : <span className="form-hint">{HINTS.username}</span>
-              }
+              <FieldFeedback error={fieldErrors.username} hint={HINTS.username} />
             </div>
 
             {/* Password with strength meter */}
@@ -249,10 +236,7 @@ export default function RegisterPage() {
                 </div>
               )}
 
-              {fieldErrors.password
-                ? <span className="form-error">{fieldErrors.password}</span>
-                : <span className="form-hint">{HINTS.password}</span>
-              }
+              <FieldFeedback error={fieldErrors.password} hint={HINTS.password} />
             </div>
 
             <button

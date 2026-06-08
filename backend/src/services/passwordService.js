@@ -1,6 +1,5 @@
 const argon2 = require('argon2')
 const crypto = require('node:crypto')
-const https = require('node:https')
 
 const ARGON2_OPTIONS = {
   type: argon2.argon2id,
@@ -22,35 +21,21 @@ const verifyPassword = async (hash, password) => {
 }
 
 // HaveIBeenPwned k-anonymity check
-// Only sends first 5 chars of SHA-1 hash - password never leaves server
-const isPasswordBreached = (password) => {
-  return new Promise((resolve) => {
-    const sha1 = crypto.createHash('sha1').update(password).digest('hex').toUpperCase()
-    const prefix = sha1.slice(0, 5)
-    const suffix = sha1.slice(5)
+// Only sends first 5 chars of SHA-1 hash — password never leaves server
+const isPasswordBreached = async (password) => {
+  const sha1 = crypto.createHash('sha1').update(password).digest('hex').toUpperCase()
+  const prefix = sha1.slice(0, 5)
+  const suffix = sha1.slice(5)
 
-    const options = {
-      hostname: 'api.pwnedpasswords.com',
-      path: `/range/${prefix}`,
-      method: 'GET',
+  try {
+    const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
       headers: { 'Add-Padding': 'true' },
-    }
-
-    const req = https.request(options, (res) => {
-      let data = ''
-      res.on('data', (chunk) => { data += chunk })
-      res.on('end', () => {
-        const found = data.split('\r\n').some((line) => {
-          const [hashSuffix] = line.split(':')
-          return hashSuffix === suffix
-        })
-        resolve(found)
-      })
     })
-
-    req.on('error', () => resolve(false)) // fail open on network error
-    req.end()
-  })
+    const text = await response.text()
+    return text.split('\r\n').some((line) => line.split(':')[0] === suffix)
+  } catch (_e) {
+    return false // fail open on network error
+  }
 }
 
 module.exports = { hashPassword, verifyPassword, isPasswordBreached }
