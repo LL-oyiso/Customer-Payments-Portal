@@ -7,6 +7,7 @@ const {
   getMyTransactions,
   createTransaction,
   getPendingTransactions,
+  getAllTransactions,
   verifyTransaction,
   submitToSwift,
   transactionValidation,
@@ -18,6 +19,7 @@ router.post('/', authenticate, requireCustomer, transactionValidation, handleVal
 
 // Staff routes
 router.get('/pending', authenticate, requireStaff, getPendingTransactions)
+router.get('/all', authenticate, requireStaff, getAllTransactions)
 router.patch('/:id/verify', authenticate, requireStaff, verifyTransaction)
 router.post('/:id/submit-to-swift', authenticate, requireStaff, submitToSwift)
 

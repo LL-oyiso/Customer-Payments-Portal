@@ -100,6 +100,22 @@ const getPendingTransactions = async (req, res, next) => {
   }
 }
 
+// Staff: get the complete transaction history across all customers (read-only audit view)
+const getAllTransactions = async (req, res, next) => {
+  try {
+    const transactions = await prisma.transaction.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        customer: { select: { fullName: true, accountNumber: true } },
+        verifiedBy: { select: { fullName: true } },
+      },
+    })
+    res.json({ transactions })
+  } catch (err) {
+    next(err)
+  }
+}
+
 // Staff: verify a transaction
 const verifyTransaction = async (req, res, next) => {
   try {
@@ -185,6 +201,7 @@ module.exports = {
   getMyTransactions,
   createTransaction,
   getPendingTransactions,
+  getAllTransactions,
   verifyTransaction,
   submitToSwift,
   transactionValidation,
