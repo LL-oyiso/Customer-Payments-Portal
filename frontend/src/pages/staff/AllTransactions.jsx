@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import Sidebar from '../../components/Sidebar'
 import api from '../../api'
 
@@ -29,8 +29,10 @@ export default function AllTransactions() {
   const [dateRange, setDateRange] = useState('30')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [currencyFilter, setCurrencyFilter] = useState('ALL')
+  // Captured once on mount so date filtering stays pure across re-renders
+  const [nowTs] = useState(() => Date.now())
 
-  const fetchAll = () => {
+  const fetchAll = useCallback(() => {
     setLoading(true)
     api.get('/transactions/all')
       .then(({ data }) => {
@@ -42,10 +44,18 @@ export default function AllTransactions() {
         setError('Could not load transaction history.')
         setLoading(false)
       })
-  }
+  }, [])
 
   useEffect(() => {
-    fetchAll()
+    api.get('/transactions/all')
+      .then(({ data }) => {
+        setTransactions(data.transactions)
+        setLoading(false)
+      })
+      .catch(() => {
+        setError('Could not load transaction history.')
+        setLoading(false)
+      })
   }, [])
 
   const currencies = useMemo(
@@ -54,18 +64,17 @@ export default function AllTransactions() {
   )
 
   const filtered = useMemo(() => {
-    const now = Date.now()
     return transactions.filter((tx) => {
       if (statusFilter !== 'ALL' && tx.status !== statusFilter) return false
       if (currencyFilter !== 'ALL' && tx.currency !== currencyFilter) return false
       if (dateRange !== 'all') {
         const days = parseInt(dateRange, 10)
-        const cutoff = now - days * 24 * 60 * 60 * 1000
+        const cutoff = nowTs - days * 24 * 60 * 60 * 1000
         if (new Date(tx.createdAt).getTime() < cutoff) return false
       }
       return true
     })
-  }, [transactions, statusFilter, currencyFilter, dateRange])
+  }, [transactions, statusFilter, currencyFilter, dateRange, nowTs])
 
   const exportCsv = () => {
     const headers = ['Customer', 'Account', 'Amount', 'Currency', 'Payee Account', 'SWIFT Code', 'Status', 'Verified By', 'Date']
