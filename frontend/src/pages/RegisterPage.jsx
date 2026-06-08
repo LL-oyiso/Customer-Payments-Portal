@@ -19,7 +19,7 @@ const PATTERNS = {
   email:         /^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]{1,253}\.[a-zA-Z]{2,}$/,
   idNumber:      /^(?!0{13})\d{13}$/,
   accountNumber: /^\d{7,11}$/,
-  username:      /^[a-zA-Z0-9_]{3,30}$/,
+  username:      /^\w{3,30}$/,
   password:      /^.{12,128}$/,
 }
 

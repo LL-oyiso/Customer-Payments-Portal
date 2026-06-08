@@ -124,9 +124,8 @@ const login = async (req, res, next) => {
   try {
     // Check brute force limit
     await loginBruteForce.consume(`${ip}_${username}`)
-  } catch (_e) {
-    // rate-limiter-flexible throws when limit is exceeded — this is the intended signal
-    securityLog('LOGIN_BLOCKED_BRUTE_FORCE', { username, ip })
+  } catch (e) {
+    securityLog('LOGIN_BLOCKED_BRUTE_FORCE', { username, ip, reason: e?.message })
     return res.status(429).json({ error: 'Too many failed attempts. Please try again later.' })
   }
 
@@ -229,6 +228,7 @@ const refresh = async (req, res, next) => {
 
     res.json({ accessToken, refreshToken: newRefreshToken })
   } catch (err) {
+    securityLog('REFRESH_TOKEN_INVALID', { error: err.message })
     return res.status(401).json({ error: 'Invalid or expired refresh token.' })
   }
 }

@@ -1,5 +1,6 @@
 const argon2 = require('argon2')
 const crypto = require('node:crypto')
+const { securityLog } = require('../utils/logger')
 
 const ARGON2_OPTIONS = {
   type: argon2.argon2id,
@@ -33,8 +34,9 @@ const isPasswordBreached = async (password) => {
     })
     const text = await response.text()
     return text.split('\r\n').some((line) => line.split(':')[0] === suffix)
-  } catch (_e) {
-    return false // fail open on network error
+  } catch (e) {
+    securityLog('HIBP_CHECK_FAILED', { error: e.message })
+    return false // fail open — HIBP unavailability must not block registration
   }
 }
 

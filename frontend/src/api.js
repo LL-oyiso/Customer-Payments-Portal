@@ -26,7 +26,7 @@ api.interceptors.response.use(
 
       if (!refreshToken) {
         localStorage.clear()
-        window.location.href = '/login'
+        globalThis.location.href = '/login'
         throw error
       }
 
@@ -38,7 +38,7 @@ api.interceptors.response.use(
         return api(original)
       } catch {
         localStorage.clear()
-        window.location.href = '/login'
+        globalThis.location.href = '/login'
         throw error
       }
     }

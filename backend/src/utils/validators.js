@@ -14,7 +14,7 @@ const PATTERNS = {
   accountNumber: /^\d{7,11}$/,
 
   // Username: alphanumeric and underscore, 3-30 chars
-  username: /^[a-zA-Z0-9_]{3,30}$/,
+  username: /^\w{3,30}$/,
 
   // Password: minimum 12 chars, max 128 (complexity enforced by zxcvbn)
   password: /^.{12,128}$/,
